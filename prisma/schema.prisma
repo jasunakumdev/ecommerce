@@ -1,0 +1,211 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                Int                 @id @default(autoincrement())
+  firstName         String              @db.VarChar(100)
+  lastName          String              @db.VarChar(100)
+  email             String              @unique @db.VarChar(255)
+  passwordHash      String
+  phone             String?             @db.VarChar(20)
+  role              String              @default("customer") @db.VarChar(50)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  wishlist          Wishlist[]
+  cart              Cart[]
+  orders            Order[]
+  reviews           Review[]
+  addresses         ShippingAddress[]
+  emailVerification EmailVerification[]
+}
+
+model Category {
+  id          Int        @id @default(autoincrement())
+  name        String     @unique @db.VarChar(255)
+  description String?
+  parentId    Int?
+  parent      Category?  @relation("CategoryToCategory", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryToCategory")
+  products    Product[]
+  createdAt   DateTime   @default(now())
+}
+
+model Product {
+  id           Int              @id @default(autoincrement())
+  categoryId   Int?
+  category     Category?        @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  name         String           @db.VarChar(255)
+  description  String?
+  price        Decimal          @db.Decimal(10, 2)
+  discount     Decimal          @default(0.0) @db.Decimal(5, 2)
+  stock        Int
+  isFeatured   Boolean          @default(false)
+  isNewArrival Boolean          @default(false)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  variants     ProductVariant[]
+  images       ProductImage[]
+  deals        Deal[]
+  wishlist     Wishlist[]
+  cart         Cart[]
+  orderItems   OrderItem[]
+  reviews      Review[]
+  searchIndex  SearchIndex[]
+}
+
+model ProductVariant {
+  id        Int     @id @default(autoincrement())
+  productId Int
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  size      String? @db.VarChar(50)
+  color     String? @db.VarChar(50)
+  stock     Int
+  price     Decimal @db.Decimal(10, 2)
+}
+
+model ProductImage {
+  id        Int     @id @default(autoincrement())
+  productId Int
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  imageUrl  String
+  isMain    Boolean @default(false)
+}
+
+model Banner {
+  id        Int       @id @default(autoincrement())
+  title     String?   @db.VarChar(255)
+  imageUrl  String
+  discount  Decimal   @default(0.0) @db.Decimal(5, 2)
+  startDate DateTime?
+  endDate   DateTime?
+  isActive  Boolean   @default(true)
+}
+
+model Deal {
+  id        Int       @id @default(autoincrement())
+  productId Int
+  product   Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  dealType  String    @db.VarChar(50)
+  discount  Decimal   @default(0.0) @db.Decimal(5, 2)
+  startDate DateTime?
+  endDate   DateTime?
+  createdAt DateTime  @default(now())
+}
+
+model Wishlist {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Cart {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int
+  createdAt DateTime @default(now())
+}
+
+model Order {
+  id          Int         @id @default(autoincrement())
+  userId      Int
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status      String      @db.VarChar(50)
+  totalAmount Decimal     @db.Decimal(10, 2)
+  createdAt   DateTime    @default(now())
+  orderItems  OrderItem[]
+  payment     Payment[]
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  orderId   Int
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId Int
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int
+  price     Decimal @db.Decimal(10, 2)
+}
+
+model ShippingAddress {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  addressLine1 String
+  addressLine2 String?
+  city         String?
+  state        String?
+  country      String?
+  postalCode   String?  @db.VarChar(20)
+  createdAt    DateTime @default(now())
+}
+
+model Payment {
+  id            Int           @id @default(autoincrement())
+  orderId       Int
+  order         Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  methodId      Int
+  method        PaymentMethod @relation(fields: [methodId], references: [id])
+  amount        Decimal       @db.Decimal(10, 2)
+  status        String        @db.VarChar(50)
+  transactionId String?       @unique
+  createdAt     DateTime      @default(now())
+}
+
+model PaymentMethod {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique @db.VarChar(255)
+  payments Payment[]
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+}
+
+model EmailVerification {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token      String
+  isVerified Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+
+model SearchIndex {
+  id         Int     @id @default(autoincrement())
+  productId  Int
+  product    Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  searchText String  @db.Text // Full-text search field
+}
+
+model AdminUser {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  passwordHash String
+  role         String   @default("admin") @db.VarChar(50) // Restrict to 'admin' or 'moderator'
+  createdAt    DateTime @default(now())
+}

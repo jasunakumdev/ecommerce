@@ -1,0 +1,78 @@
+Prisma install on next
+
+npm install prisma --save-dev
+
+npx prisma init
+
+.env
+DATABASE_URL="postgresql://ecommerce_user:your_secure_password@localhost:5432/ecommerce_db?schema=public"
+
+
+Modify prisma/schema.prisma to use PostgreSQL:
+
+
+
+npx prisma migrate dev --name init
+
+
+
+npx prisma generate
+
+
+npm install pg pg-pool
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+create full database for ecommerce project that has below features
+
+1. Categoeries
+2. Product banner for discount and sell
+3. Todays deals
+4. Best selling products
+5. new arrival
+6. Wish List
+7. Product cart 
+8. Payment
+9. Product order
+10. User profile for manage user
+11. user all orders and history and order cancellation
+12. Payment options
+13. Manage products, product has a size, color, multiple image, banner, stocks and all related feature like real product scenario
+14. shiping address for customer
+15. product search with low latency
+16. product review and rating
+17. seasonal sell
+18. display dynamic product banner 
+19. new arrival product
+20. user login and registration
+21. emails for confirmation
+
+All other related feature if I missing any ecommerce project features
+I want to build this project using below technologies
+
+NextJs
+ExpressJs
+Postgre DB
+
+so help to create all db tables
+
+
+

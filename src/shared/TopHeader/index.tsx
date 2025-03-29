@@ -15,7 +15,6 @@ import { usePathname } from 'next/navigation'
 
 const Header = () => {
   const currentRoute = usePathname()
-  console.log('Router--->', currentRoute)
   return (
     <>
       <Navbar

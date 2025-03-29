@@ -17,26 +17,3 @@ export async function GET() {
     )
   }
 }
-
-/** POST: Add a new product variant */
-export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json()
-    const variant = await prisma.productVariant.create({
-      data: {
-        productId: body.productId,
-        size: body.size,
-        color: body.color,
-        stock: body.stock,
-        price: body.price,
-      },
-    })
-
-    return NextResponse.json(variant, { status: 201 })
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to create product variant' },
-      { status: 500 }
-    )
-  }
-}

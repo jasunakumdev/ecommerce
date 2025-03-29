@@ -53,24 +53,3 @@ export async function PUT(
     )
   }
 }
-
-/** DELETE: Remove email verification entry by ID */
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  try {
-    await prisma.emailVerification.delete({
-      where: { id: Number(params.id) },
-    })
-
-    return NextResponse.json({
-      message: 'Email verification entry deleted successfully',
-    })
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to delete email verification entry' },
-      { status: 500 }
-    )
-  }
-}

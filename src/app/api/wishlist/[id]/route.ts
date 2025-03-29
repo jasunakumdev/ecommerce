@@ -29,22 +29,3 @@ export async function GET(
     )
   }
 }
-
-/** DELETE: Remove a wishlist item by ID */
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  try {
-    await prisma.wishlist.delete({ where: { id: Number(params.id) } })
-    return NextResponse.json(
-      { message: 'Wishlist item removed' },
-      { status: 200 }
-    )
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to remove wishlist item' },
-      { status: 500 }
-    )
-  }
-}

@@ -17,29 +17,3 @@ export async function GET() {
     )
   }
 }
-
-/** POST: Create a new product image */
-export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json()
-    const { productId, imageUrl, isMain } = body
-
-    if (!productId || !imageUrl) {
-      return NextResponse.json(
-        { error: 'Product ID and Image URL are required' },
-        { status: 400 }
-      )
-    }
-
-    const newImage = await prisma.productImage.create({
-      data: { productId, imageUrl, isMain },
-    })
-
-    return NextResponse.json(newImage, { status: 201 })
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to create product image' },
-      { status: 500 }
-    )
-  }
-}

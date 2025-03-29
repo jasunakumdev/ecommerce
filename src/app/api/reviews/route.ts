@@ -17,29 +17,3 @@ export async function GET() {
     )
   }
 }
-
-/** POST: Create a new review */
-export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json()
-    const { userId, productId, rating, comment } = body
-
-    if (!userId || !productId || !rating) {
-      return NextResponse.json(
-        { error: 'User ID, Product ID, and Rating are required' },
-        { status: 400 }
-      )
-    }
-
-    const newReview = await prisma.review.create({
-      data: { userId, productId, rating, comment },
-    })
-
-    return NextResponse.json(newReview, { status: 201 })
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to create review' },
-      { status: 500 }
-    )
-  }
-}

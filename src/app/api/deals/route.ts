@@ -17,29 +17,3 @@ export async function GET() {
     )
   }
 }
-
-/** POST: Create a new deal */
-export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json()
-    const { productId, dealType, discount, startDate, endDate } = body
-
-    if (!productId || !dealType) {
-      return NextResponse.json(
-        { error: 'Product ID and Deal Type are required' },
-        { status: 400 }
-      )
-    }
-
-    const newDeal = await prisma.deal.create({
-      data: { productId, dealType, discount, startDate, endDate },
-    })
-
-    return NextResponse.json(newDeal, { status: 201 })
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to create deal' },
-      { status: 500 }
-    )
-  }
-}

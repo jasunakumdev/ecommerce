@@ -21,24 +21,3 @@ export async function GET() {
     )
   }
 }
-
-/** POST: Add a new category */
-export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json()
-    const category = await prisma.category.create({
-      data: {
-        name: body.name,
-        description: body.description,
-        parentId: body.parentId || null,
-      },
-    })
-
-    return NextResponse.json(category, { status: 201 })
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to create category' },
-      { status: 500 }
-    )
-  }
-}

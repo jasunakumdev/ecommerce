@@ -17,29 +17,3 @@ export async function GET() {
     )
   }
 }
-
-/** POST: Add a new order item */
-export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json()
-    const { orderId, productId, quantity, price } = body
-
-    if (!orderId || !productId || !quantity || !price) {
-      return NextResponse.json(
-        { error: 'All fields are required' },
-        { status: 400 }
-      )
-    }
-
-    const newOrderItem = await prisma.orderItem.create({
-      data: { orderId, productId, quantity, price },
-    })
-
-    return NextResponse.json(newOrderItem, { status: 201 })
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to add order item' },
-      { status: 500 }
-    )
-  }
-}

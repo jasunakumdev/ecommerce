@@ -17,29 +17,3 @@ export async function GET() {
     )
   }
 }
-
-/** POST: Add a new payment */
-export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json()
-    const { orderId, methodId, amount, status, transactionId } = body
-
-    if (!orderId || !methodId || !amount || !status) {
-      return NextResponse.json(
-        { error: 'All fields except transactionId are required' },
-        { status: 400 }
-      )
-    }
-
-    const newPayment = await prisma.payment.create({
-      data: { orderId, methodId, amount, status, transactionId },
-    })
-
-    return NextResponse.json(newPayment, { status: 201 })
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to add payment' },
-      { status: 500 }
-    )
-  }
-}

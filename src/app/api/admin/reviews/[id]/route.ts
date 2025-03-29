@@ -3,63 +3,64 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-/** GET: Fetch a banner by ID */
+/** GET: Fetch a review by ID */
 export async function GET(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const banner = await prisma.banner.findUnique({
+    const review = await prisma.review.findUnique({
       where: { id: Number(params.id) },
+      include: { user: true, product: true },
     })
 
-    if (!banner) {
-      return NextResponse.json({ error: 'Banner not found' }, { status: 404 })
+    if (!review) {
+      return NextResponse.json({ error: 'Review not found' }, { status: 404 })
     }
 
-    return NextResponse.json(banner)
+    return NextResponse.json(review)
   } catch (error) {
     return NextResponse.json(
-      { error: 'Failed to fetch banner' },
+      { error: 'Failed to fetch review' },
       { status: 500 }
     )
   }
 }
 
-/** PUT: Update a banner by ID */
+/** PUT: Update a review by ID */
 export async function PUT(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
     const body = await req.json()
-    const { title, imageUrl, discount, startDate, endDate, isActive } = body
+    const { rating, comment } = body
 
-    const updatedBanner = await prisma.banner.update({
+    const updatedReview = await prisma.review.update({
       where: { id: Number(params.id) },
-      data: { title, imageUrl, discount, startDate, endDate, isActive },
+      data: { rating, comment },
     })
 
-    return NextResponse.json(updatedBanner)
+    return NextResponse.json(updatedReview)
   } catch (error) {
     return NextResponse.json(
-      { error: 'Failed to update banner' },
+      { error: 'Failed to update review' },
       { status: 500 }
     )
   }
 }
 
-/** DELETE: Remove a banner by ID */
+/** DELETE: Remove a review by ID */
 export async function DELETE(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    await prisma.banner.delete({ where: { id: Number(params.id) } })
-    return NextResponse.json({ message: 'Banner deleted' }, { status: 200 })
+    await prisma.review.delete({ where: { id: Number(params.id) } })
+    return NextResponse.json({ message: 'Review deleted' }, { status: 200 })
   } catch (error) {
     return NextResponse.json(
-      { error: 'Failed to delete banner' },
+      { error: 'Failed to delete review' },
       { status: 500 }
     )
   }
